@@ -10,7 +10,10 @@ function Dashboard() {
         <h2>Welcome to Dashboard 🎉</h2>
         <p>Your resume builder is ready.</p>
 
-        <button className="primary">
+        <button
+          className="primary"
+          onClick={() => navigate("/builder")}
+        >
           Create Resume
         </button>
 
