@@ -52,9 +52,66 @@ const createResume = async (req, res, next) => {
   }
 };
 
+// @desc    Update a resume
+// @route   PUT /api/resumes/:id
+// @access  Private
+const updateResume = async (req, res, next) => {
+  try {
+    const resume = await Resume.findById(req.params.id);
+
+    if (!resume) {
+      res.status(404);
+      throw new Error('Resume not found');
+    }
+
+    // Make sure the logged in user matches the resume user
+    if (resume.user.toString() !== req.user.id) {
+      res.status(401);
+      throw new Error('User not authorized');
+    }
+
+    const updatedResume = await Resume.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true, runValidators: true }
+    );
+
+    res.status(200).json(updatedResume);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Delete a resume
+// @route   DELETE /api/resumes/:id
+// @access  Private
+const deleteResume = async (req, res, next) => {
+  try {
+    const resume = await Resume.findById(req.params.id);
+
+    if (!resume) {
+      res.status(404);
+      throw new Error('Resume not found');
+    }
+
+    // Make sure the logged in user matches the resume user
+    if (resume.user.toString() !== req.user.id) {
+      res.status(401);
+      throw new Error('User not authorized');
+    }
+
+    await resume.deleteOne();
+
+    res.status(200).json({ id: req.params.id, message: 'Resume deleted' });
+  } catch (error) {
+    next(error);
+  }
+};
 
 module.exports = {
   getResumes,
   getResumeById,
-  createResume
+  createResume,
+  updateResume,
+  deleteResume
 };
